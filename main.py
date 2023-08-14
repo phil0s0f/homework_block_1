@@ -1,7 +1,5 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
 import plotly.express as px
 from scipy import stats
 
@@ -28,6 +26,24 @@ def plotting(dataframe, column):
 
 def hypothesis_test(dataframe, column1, column2, test):
     st.subheader("Hypothesis test")
+    if test == "t-test":
+        if (dataframe[column1].dtypes != 'object') and (
+                dataframe[column1].dtypes != 'string') and (dataframe[column2].dtypes != 'object') and (
+                dataframe[column2].dtypes != 'string'):
+            stat, p_value = stats.ttest_ind(dataframe[column1], dataframe[column2])
+            st.write(f"t-test: statistic={stat:.6f}, p-value={p_value:.6f}")
+        else:
+            st.write(f"Wrong data types")
+    else:
+        if (dataframe[column1].dtypes != 'object') and (
+                dataframe[column1].dtypes != 'string') and (dataframe[column2].dtypes != 'object') and (
+                dataframe[column2].dtypes != 'string'):
+            # results = stats.mannwhitneyu(dataframe[column1], dataframe[column2])
+            # st.write(f"Mann-Whitney U Test: {results}")
+            stat, p_value = stats.mannwhitneyu(dataframe[column1], dataframe[column2])
+            st.write(f"Mann-Whitney U Test: statistic={stat:.6f}, p-value={p_value:.6f}")
+        else:
+            st.write(f"Wrong data types")
 
 
 def streamlit_run():
@@ -48,7 +64,8 @@ def streamlit_run():
                     dataframe.columns)
             plotting(dataframe, column1)
             plotting(dataframe, column2)
-            selected_test = st.selectbox("Choose a hypothesis test algorithm", ["t-test", "chi-square test"])
+            selected_test = st.selectbox("Choose a hypothesis test algorithm",
+                                         ["Mann-Whitney U-test", "t-test"])
             if st.button("Start test"):
                 hypothesis_test(dataframe, column1, column2, selected_test)
 
